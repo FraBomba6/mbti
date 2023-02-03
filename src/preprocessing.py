@@ -38,6 +38,25 @@ mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-P|:P", 'tongue_out
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\||:\|", 'neutral', regex=True)
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-S|:S", 'confused', regex=True)
 
+# %% Split the type column into four columns and store the result in a temporary DataFrame
+temp_df = mbti_dataset['type'].str.split("", expand=True)
+
+# Assign the columns of the temporary DataFrame to the original DataFrame
+mbti_dataset['I-E'] = temp_df[1]
+mbti_dataset['N-S'] = temp_df[2]
+mbti_dataset['T-F'] = temp_df[3]
+mbti_dataset['J-P'] = temp_df[4]
+
+# Specify the new order of columns
+new_column_order = ['type', 'I-E', 'N-S', 'T-F', 'J-P', 'posts']
+
+# Reorder the columns in the DataFrame
+mbti_dataset = mbti_dataset.reindex(columns=new_column_order)
+
+print(mbti_dataset)
+
+
+
 
 
 
