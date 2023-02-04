@@ -1,7 +1,8 @@
 #import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-# from transformers import BertForSequenceClassification, BertTokenizer
+#from transformers import BertForSequenceClassification, BertTokenizer
+
 
 # %%
 # IF YOU RUN USING CHUNKS
@@ -47,7 +48,8 @@ new_column_order = ['type', 'I-E', 'N-S', 'T-F', 'J-P', 'posts']
 # Reorder the columns in the DataFrame
 mbti_dataset = mbti_dataset.reindex(columns=new_column_order)
 
-print(mbti_dataset)
+
+
 
 
 
