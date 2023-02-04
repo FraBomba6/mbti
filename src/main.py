@@ -1,5 +1,21 @@
+# IF YOU RUN FROM TERMINAL
+# import classifier
+
+# IF YOU RUN CHUNKS
+import src.classifier as classifier
+import torch
+
+from torch.optim import AdamW
+from transformers import get_linear_schedule_with_warmup
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+EPOCHS = 3 # number of iterations we are performing the training steps over the dataset
+
+#%%
+model = classifier.get_model("xlnet")
+model.to(DEVICE) # send the model to the device for usage
+
+optimizer = AdamW(model.parameters(), lr=5e-3, eps=1e-8)
+
+scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
 
 
-# %%
-model = BertForSequenceClassification.from_pretrained("bert-base-uncased")
-tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
