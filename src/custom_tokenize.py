@@ -13,9 +13,7 @@ def get_tokenizer(model_string: str):
 def tokenize(model_string, df: pd.DataFrame):
     tokenizer = get_tokenizer(model_string)
     text = df['posts'].tolist()
-    tokenized_text = tokenizer(text)
-    #input_ids = tokenizer.encode(text, return_tensors='pt')
-    #input_ids = tokenizer.convert_tokens_to_ids(tokenized_text)
+    tokenized_text = tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True, return_tensors='pt')
     #print(input_ids)
     return tokenized_text
 
