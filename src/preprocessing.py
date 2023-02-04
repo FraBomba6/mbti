@@ -6,10 +6,9 @@ import pandas as pd
 
 # %%
 # IF YOU RUN USING CHUNKS
-mbti_dataset = pd.read_csv("data/dataset.csv")
-print(mbti_dataset.head(5))
+#mbti_dataset = pd.read_csv("data/dataset.csv")
 # ELSE
-#mbti_dataset = pd.read_csv("../data/dataset.csv")
+mbti_dataset = pd.read_csv("../data/dataset.csv")
 
 #TODO: decide how to hand the words/sentences to the model: 1 sentence, 2 sentences, half-half,
 # tokenization: tokener will split sentence
@@ -21,6 +20,11 @@ mbti_dataset['posts'] = mbti_dataset['posts'].str.lower()
 words_to_remove = [r'http\S+', '|', '_', 'infp', 'infj', 'intp', 'intj', 'entp', 'enfp', 'istp', 'isfp', 'entj', 'istj', 'enfj', 'isfj', 'estp', 'esfp', 'esfj', 'estj']
 for word in words_to_remove:
     mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(word, '', regex=True)
+
+# %%
+mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r'[^\w\s\']', ' ', regex=True)
+mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r'\s{2,}', ' ', regex=True)
+
 
 # %% CONVERT SMILEY FACES INTO WORDS
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\)|:\)", 'happy', regex=True)

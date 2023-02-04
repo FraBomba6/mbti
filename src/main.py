@@ -1,19 +1,23 @@
 # IF YOU RUN FROM TERMINAL
-# import classifier
+import classifier as classifier
+from preprocessing import mbti_dataset
+from custom_tokenize import tokenize
 
 # IF YOU RUN CHUNKS
-import src.classifier as classifier
-from src.preprocessing import mbti_dataset
-from src.custom_tokenize import tokenize
+#import src.classifier as classifier
+#from src.preprocessing import mbti_dataset
+#from src.custom_tokenize import tokenize
+
 import torch
 from torch.optim import AdamW
 from transformers import get_linear_schedule_with_warmup
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 EPOCHS = 3 # number of iterations we are performing the training steps over the dataset
 
 #%%
 model_string = 'xlnet'
-tokenize(model_string, mbti_dataset)
+tokenized_text = tokenize(model_string, mbti_dataset)
+print()
 
 #%%
 model = classifier.get_model("xlnet")
