@@ -4,7 +4,7 @@
 # IF YOU RUN CHUNKS
 import src.classifier as classifier
 from src.preprocessing import mbti_dataset
-from src.tokenize import tokenize
+from src.custom_tokenize import tokenize
 import torch
 from torch.optim import AdamW
 from transformers import get_linear_schedule_with_warmup
