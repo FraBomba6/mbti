@@ -22,12 +22,14 @@ for word in words_to_remove:
     mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(word, '', regex=True)
 
 # %% CONVERT SMILEY FACES INTO WORDS
-mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\)|:\)", 'smile', regex=True)
-mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\(|:\(", 'frown', regex=True)
+mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\)|:\)", 'happy', regex=True)
+mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\(|:\(", 'sad', regex=True)
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r";-\)|;\)", 'wink', regex=True)
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-D|:D", 'grin', regex=True)
+mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-O|:o|:-o|:O", 'surprised', regex=True)
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-P|:P", 'tongue_out', regex=True)
-mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\||:\|", 'neutral', regex=True)
+mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\||:\|", 'blank', regex=True)
+mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\|/:\/", 'disappointed', regex=True)
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-S|:S", 'confused', regex=True)
 
 # %% Split the type column into four columns and store the result in a temporary DataFrame
