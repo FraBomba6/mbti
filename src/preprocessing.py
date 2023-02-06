@@ -1,6 +1,8 @@
 #import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import tensorflow as tf
+import torch
 #from transformers import BertForSequenceClassification, BertTokenizer
 
 
@@ -51,6 +53,34 @@ new_column_order = ['type', 'I-E', 'N-S', 'T-F', 'J-P', 'posts']
 
 # Reorder the columns in the DataFrame
 mbti_dataset = mbti_dataset.reindex(columns=new_column_order)
+
+# %% Encode Type letters to 0 and 1
+mbti_dataset['I-E'] = mbti_dataset['I-E'].str.replace("I", '0')
+mbti_dataset['I-E'] = mbti_dataset['I-E'].str.replace("E", '1')
+mbti_dataset['N-S'] = mbti_dataset['N-S'].str.replace("N", '0')
+mbti_dataset['N-S'] = mbti_dataset['N-S'].str.replace("S", '1')
+mbti_dataset['T-F'] = mbti_dataset['T-F'].str.replace("T", '0')
+mbti_dataset['T-F'] = mbti_dataset['T-F'].str.replace("F", '1')
+mbti_dataset['J-P'] = mbti_dataset['J-P'].str.replace("J", '0')
+mbti_dataset['J-P'] = mbti_dataset['J-P'].str.replace("P", '1')
+
+# %%
+i_e = mbti_dataset['I-E'].tolist()
+i_e = [int(x) for x in i_e]
+#i_e = tf.convert_to_tensor(i_e)
+n_s = mbti_dataset['N-S'].tolist()
+n_s = [int(x) for x in n_s]
+#n_s = tf.convert_to_tensor(n_s)
+t_f = mbti_dataset['T-F'].tolist()
+t_f = [int(x) for x in t_f]
+#t_f = tf.convert_to_tensor(t_f)
+j_p = mbti_dataset['J-P'].tolist()
+j_p = [int(x) for x in j_p]
+#j_p = tf.convert_to_tensor(j_p)
+
+type_data = tf.stack([i_e, n_s, t_f, j_p], axis=1)
+#type_data = tf.convert_to_tensor(type_data)
+print(type_data)
 
 
 

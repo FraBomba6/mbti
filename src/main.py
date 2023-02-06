@@ -1,7 +1,8 @@
 # IF YOU RUN FROM TERMINAL
 import classifier as classifier
-from preprocessing import mbti_dataset
+from preprocessing import mbti_dataset, type_data
 from custom_tokenize import tokenize
+import tensorflow as tf
 
 # IF YOU RUN CHUNKS
 #import src.classifier as classifier
@@ -17,6 +18,8 @@ EPOCHS = 3 # number of iterations we are performing the training steps over the 
 #%%
 model_string = 'xlnet'
 tokenized_text = tokenize(model_string, mbti_dataset)
+#type_data = type_data
+dataset = tf.concat([type_data], tokenized_text['input_ids'])
 print()
 
 #%%
