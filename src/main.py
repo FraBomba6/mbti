@@ -19,7 +19,8 @@ EPOCHS = 3 # number of iterations we are performing the training steps over the 
 model_string = 'xlnet'
 tokenized_text = tokenize(model_string, mbti_dataset)
 #type_data = type_data
-dataset = tf.concat([type_data], tokenized_text['input_ids'])
+dataset = torch.cat((type_data, tokenized_text['input_ids']), 1)
+print(dataset)
 print()
 
 #%%
