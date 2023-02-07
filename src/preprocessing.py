@@ -70,6 +70,6 @@ j_p = mbti_dataset['J-P'].tolist()
 j_p = [int(x) for x in j_p]
 j_p = torch.Tensor(j_p)
 
-# type_data = torch.stack((i_e, n_s, t_f, j_p), dim=1)
+# type_data = torch.stack((i_e, n_s, t_f, j_p), dim=1) #not needed
 # type_data = (i_e, n_s, t_f, j_p)
 # print(type_data)
