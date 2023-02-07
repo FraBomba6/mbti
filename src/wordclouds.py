@@ -1,3 +1,74 @@
+import os
+import nltk
+from os import path
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud, STOPWORDS
+from nltk.probability import FreqDist
+from PIL import Image
+import numpy as np
+from tqdm import tqdm
+import pandas as pd
+import sklearn
+
+
+text_file = "../data/dataset.csv" # ../ for going up one folder
+text = open(text_file, "r", encoding="utf-8").read()
+text = text.lower()
+dataset = pd.read_csv("../data/dataset.csv")
+
+posts_by_type = {}
+
+for row in dataset.iterrows():
+    row = row[1]
+    if row[0] not in posts_by_type.keys():
+        posts_by_type[row[0]] = ""
+    posts_by_type[row[0]] += row[1]
+
+# %%
+
+stopwords = set(STOPWORDS)
+stopwords.add('|')
+stopwords.add('_')
+stopwords.add(r'http\S+')
+stopwords.add('infp')
+stopwords.add('infj')
+stopwords.add('intp')
+stopwords.add('intj')
+stopwords.add('entp')
+stopwords.add('istp')
+stopwords.add('isfp')
+stopwords.add('entj')
+stopwords.add('istj')
+stopwords.add('enfj')
+stopwords.add('isfj')
+stopwords.add('estp')
+stopwords.add('esfj')
+stopwords.add('esfp')
+stopwords.add('enfp')
+stopwords.add('estj')
+stopwords.add('people')
+stopwords.add('think')
+stopwords.add('know')
+stopwords.add('one')
+stopwords.add('thing')
+stopwords.add('really')
+stopwords.add('well')
+stopwords.add('type')
+
+my_wordcloud = WordCloud(width=800, height=800, stopwords=stopwords, background_color='white')
+
+for type in tqdm(posts_by_type.keys()):
+    my_wordcloud_type = my_wordcloud.generate(posts_by_type[type])
+    plt.subplots(figsize = (15,15))
+    plt.imshow(my_wordcloud_type)
+    plt.axis("off")
+    plt.title(type, fontsize = 30)
+    plt.savefig('../img/'+type+'.png')
+    plt.show()
+
+
+
+'''
 # %%
 
 import os
@@ -11,40 +82,22 @@ import numpy as np
 import pandas as pd
 import sklearn
 
-nltk.download('punkt')
+#nltk.download('punkt')
 
 text_file = "../data/dataset.csv" # ../ for going up one folder
 text = open(text_file, "r", encoding="utf-8").read()
 text = text.lower()
-
-# %%
-# ALTERNATIVE 1 (probably worse)
-# taken from https://opendatascience.com/creating-word-clouds-from-text/?utm_campaign=Newsletters&utm_medium=email&_hsmi=2&_hsenc=p2ANqtz--JaDC53T21O5oExiZFIFC_2OUcsfsrKerobHldEhvccO4prGCg6ooQtjlAP-WZfR1XB_Moc1qGtaVlLgrd4VWt9t6b7A&utm_content=2&utm_source=hs_email
-
-
-
-# probably not needed because stopwords were already taken away
-#stopwords = compile_stopwords_list_frequency(text)
-#stopwords.remove("MBTI")
-
-#output_filename = "odsc_wordcloud.png"
-#wordcloud = WordCloud(min_font_size=10, max_font_size=100, stopwords=stopwords, width=1000, height=1000, max_words=1000, background_color="white").generate(text)
-#wordcloud.to_file(output_filename)
-
-#plt.figure()
-#plt.imshow(wordcloud, interpolation="bilinear")
-#plt.axis("off")
-#plt.show()
 
 
 # %%
 # taken from https://donche.github.io/en/2017/12/27/mbti_blog.html, example with E-I
 #ALTERNATIVE 2 (probably better because applied to the same task)
 
-data = "../data/dataset.csv" # ../ for going up one folder
+#data = "../data/dataset.csv" # ../ for going up one folder
+data = pd.read_csv('../data/dataset.csv')
 text = open(text_file, "r", encoding="utf-8").read()
 text = text.lower()
-type_quote = data.groupby('type').sum()
+type_quote = data.groupby('type').sum
 
 e_posts = ''
 i_posts = ''
@@ -55,25 +108,25 @@ t_posts = ''
 j_posts = ''
 p_posts = ''
 
-for _type in type_quote.index:
-    if 'E' in _type:
+for _type in type_quote.type:
+    if 'e' in _type:
         e_posts += type_quote.loc[_type].posts
     else:
         i_posts += type_quote.loc[_type].posts
 
-for _type in type_quote.index:
-    if 'S' in _type:
+for _type in type_quote.type:
+    if 's' in _type:
         s_posts += type_quote.loc[_type].posts
     else:
         n_posts += type_quote.loc[_type].posts
 
-for _type in type_quote.index:
-    if 'T' in _type:
+for _type in type_quote.type:
+    if 's' in _type:
         t_posts += type_quote.loc[_type].posts
     else:
         f_posts += type_quote.loc[_type].posts
 
-for _type in type_quote.index:
+for _type in type_quote.type:
     if 'J' in _type:
         j_posts += type_quote.loc[_type].posts
     else:
@@ -173,3 +226,26 @@ plt.imshow(my_wordcloud_infj)
 plt.axis("off")
 plt.title('Perception', fontsize = 30)
 plt.show()
+
+# %%
+# ALTERNATIVE 1 (probably worse)
+# taken from https://opendatascience.com/creating-word-clouds-from-text/?utm_campaign=Newsletters&utm_medium=email&_hsmi=2&_hsenc=p2ANqtz--JaDC53T21O5oExiZFIFC_2OUcsfsrKerobHldEhvccO4prGCg6ooQtjlAP-WZfR1XB_Moc1qGtaVlLgrd4VWt9t6b7A&utm_content=2&utm_source=hs_email
+
+
+
+# probably not needed because stopwords were already taken away
+#stopwords = compile_stopwords_list_frequency(text)
+#stopwords.remove("MBTI")
+
+#output_filename = "odsc_wordcloud.png"
+#wordcloud = WordCloud(min_font_size=10, max_font_size=100, stopwords=stopwords, width=1000, height=1000, max_words=1000, background_color="white").generate(text)
+#wordcloud.to_file(output_filename)
+
+#plt.figure()
+#plt.imshow(wordcloud, interpolation="bilinear")
+#plt.axis("off")
+#plt.show()
+
+
+
+'''
