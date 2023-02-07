@@ -1,19 +1,11 @@
-#import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import tensorflow as tf
 import torch
-#from transformers import BertForSequenceClassification, BertTokenizer
-
 
 # %%
 # IF YOU RUN USING CHUNKS
-#mbti_dataset = pd.read_csv("data/dataset.csv")
+# mbti_dataset = pd.read_csv("data/dataset.csv")
 # ELSE
 mbti_dataset = pd.read_csv("../data/dataset.csv")
-
-#TODO: decide how to hand the words/sentences to the model: 1 sentence, 2 sentences, half-half,
-# tokenization: tokener will split sentence
 
 # %% LOWERCASE
 mbti_dataset['posts'] = mbti_dataset['posts'].str.lower()
@@ -78,15 +70,6 @@ j_p = mbti_dataset['J-P'].tolist()
 j_p = [int(x) for x in j_p]
 j_p = torch.Tensor(j_p)
 
-type_data = torch.stack((i_e, n_s, t_f, j_p), dim=1)
-#type_data = tf.convert_to_tensor(type_data)
-print(type_data)
-
-
-
-
-
-
-
-
-
+# type_data = torch.stack((i_e, n_s, t_f, j_p), dim=1)
+# type_data = (i_e, n_s, t_f, j_p)
+# print(type_data)
