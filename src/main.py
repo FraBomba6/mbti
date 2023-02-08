@@ -113,6 +113,9 @@ def test_classification(dataloader, label_index, model, scheduler, optimizer):
             loss, logits = outputs[:2]
             total_loss += loss.item()
 
+        logits.cpu()
+        batch_labels.cpu()
+
         total_accuracy += f1(logits, batch_labels)
 
     avg_loss = total_loss / len(dataloader)
