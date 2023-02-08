@@ -33,22 +33,41 @@ test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=BATCH_SIZ
 # Model I-E
 
 model_ie = classifier.get_model("xlnet")
-optimizer = AdamW(model_ie.parameters(), lr=5e-3, eps=1e-8)
-scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
+optimizer_ie = AdamW(model_ie.parameters(), lr=5e-3, eps=1e-8)
+scheduler_ie = get_linear_schedule_with_warmup(optimizer_ie, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
 
-def train_model_one_epoch(dataloader, epoch, label_index, model_ie, scheduler_ie, optimizer_ie):
+# Model N-S
+
+model_ns = classifier.get_model("xlnet")
+optimizer_ns = AdamW(model_ns.parameters(), lr=5e-3, eps=1e-8)
+scheduler_ns = get_linear_schedule_with_warmup(optimizer_ns, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
+
+# Model T-F
+
+model_tf = classifier.get_model("xlnet")
+optimizer_tf = AdamW(model_tf.parameters(), lr=5e-3, eps=1e-8)
+scheduler_tf = get_linear_schedule_with_warmup(optimizer_tf, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
+
+# Model J-P
+
+model_jp = classifier.get_model("xlnet")
+optimizer_jp = AdamW(model_jp.parameters(), lr=5e-3, eps=1e-8)
+scheduler_jp = get_linear_schedule_with_warmup(optimizer_jp, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
+
+
+def train_model_one_epoch(dataloader, epoch, label_index, model, scheduler, optimizer):
     console.log(f"Training epoch #{epoch+1}")
     total_loss = 0
-    model_ie.to(DEVICE)
-    model_ie.train()
+    model.to(DEVICE)
+    model.train()
 
     for step, batch in tqdm(enumerate(dataloader), total=len(dataloader)):
         batch_input_ids = batch[0].to(DEVICE)
         batch_input_masks = batch[1].to(DEVICE)
         batch_labels = batch[label_index+1].to(DEVICE)
 
-        model_ie.zero_grad()
-        outputs = model_ie(
+        model.zero_grad()
+        outputs = model(
             input_ids=batch_input_ids,
             attention_mask=batch_input_masks,
             labels=batch_labels
@@ -56,11 +75,18 @@ def train_model_one_epoch(dataloader, epoch, label_index, model_ie, scheduler_ie
         loss, logits = outputs[:2] #logit = predicted value (that one gets), label is what I want
         total_loss += loss.item()
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(model_ie.parameters(), 1.0) #prevent gradient from exploding (normalization)
-        optimizer_ie.step() #updating the values for next iteration
-        scheduler_ie.step() #updating the values for next iteration
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0) #prevent gradient from exploding (normalization)
+        optimizer.step() #updating the values for next iteration
+        scheduler.step() #updating the values for next iteration
 
     avg_loss = total_loss / len(dataloader)
     console.log("Average loss: {0:.4f}".format(avg_loss))
-    model_ie.cpu()
+    model.cpu()
+
+
+    for epoch in range(EPOCHS):
+        train_model_one_epoch(train_dataloader, epoch, 1, model_ie, scheduler_ie, optimizer_ie)
+        train_model_one_epoch(train_dataloader, epoch, 1, model_ns, scheduler_ns, optimizer_ns)
+        train_model_one_epoch(train_dataloader, epoch, 1, model_tf, scheduler_tf, optimizer_tf)
+        train_model_one_epoch(train_dataloader, epoch, 1, model_jp, scheduler_jp, optimizer_jp)
 
