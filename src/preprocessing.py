@@ -70,15 +70,15 @@ i_e = torch.stack(i_e)
 n_s = mbti_dataset['N-S'].tolist()
 #n_s = [int(x) for x in n_s]
 #n_s = torch.Tensor(n_s)
-n_s = torch.stack(i_e)
+n_s = torch.stack(n_s)
 t_f = mbti_dataset['T-F'].tolist()
 #t_f = [int(x) for x in t_f]
 #t_f = torch.Tensor(t_f)
-f_f = torch.stack(i_e)
+t_f = torch.stack(t_f)
 j_p = mbti_dataset['J-P'].tolist()
 #j_p = [int(x) for x in j_p]
 #j_p = torch.Tensor(j_p)
-j_p = torch.stack(i_e)
+j_p = torch.stack(j_p)
 
 # type_data = torch.stack((i_e, n_s, t_f, j_p), dim=1) #not needed
 # type_data = (i_e, n_s, t_f, j_p)

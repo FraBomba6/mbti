@@ -84,9 +84,9 @@ def train_model_one_epoch(dataloader, epoch, label_index, model, scheduler, opti
     model.cpu()
 
 
-    for epoch in range(EPOCHS):
-        train_model_one_epoch(train_dataloader, epoch, 1, model_ie, scheduler_ie, optimizer_ie)
-        train_model_one_epoch(train_dataloader, epoch, 1, model_ns, scheduler_ns, optimizer_ns)
-        train_model_one_epoch(train_dataloader, epoch, 1, model_tf, scheduler_tf, optimizer_tf)
-        train_model_one_epoch(train_dataloader, epoch, 1, model_jp, scheduler_jp, optimizer_jp)
+for epoch in range(EPOCHS):
+    train_model_one_epoch(train_dataloader, epoch, 1, model_ie, scheduler_ie, optimizer_ie)
+    train_model_one_epoch(train_dataloader, epoch, 1, model_ns, scheduler_ns, optimizer_ns)
+    train_model_one_epoch(train_dataloader, epoch, 1, model_tf, scheduler_tf, optimizer_tf)
+    train_model_one_epoch(train_dataloader, epoch, 1, model_jp, scheduler_jp, optimizer_jp)
 
