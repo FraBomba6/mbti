@@ -1,27 +1,34 @@
 import pandas as pd
 import torch
 import numpy as np
+from rich.console import Console
+console = Console()
 
 # %%
+console.log("Reading dataset")
 # IF YOU RUN USING CHUNKS
 # mbti_dataset = pd.read_csv("data/dataset.csv")
 # ELSE
 mbti_dataset = pd.read_csv("../data/dataset.csv")
 
 # %% LOWERCASE
+console.log("Lowercasing")
 mbti_dataset['posts'] = mbti_dataset['posts'].str.lower()
 
 # %% REMOVE HYPERLINKS, SPECIAL, CHARACTERS, AND MBTI TYPES -> STOPWORDS WILL BE REMOVED AND LEMMATIZATION WILL BE DONE WITH THE TOKENIZER
+console.log("Removing hyperlinks, special characters, and MBTI types")
 words_to_remove = [r'http\S+', '|', '_', 'infp', 'infj', 'intp', 'intj', 'entp', 'enfp', 'istp', 'isfp', 'entj', 'istj', 'enfj', 'isfj', 'estp', 'esfp', 'esfj', 'estj']
 for word in words_to_remove:
     mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(word, '', regex=True)
 
 # %%
+console.log("Removing punctuation")
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r'[^\w\s\']', ' ', regex=True)
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r'\s{2,}', ' ', regex=True)
 
 
 # %% CONVERT SMILEY FACES INTO WORDS
+console.log("Converting smiley faces into words")
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\)|:\)", 'happy', regex=True)
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\(|:\(", 'sad', regex=True)
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r";-\)|;\)", 'wink', regex=True)
@@ -33,6 +40,7 @@ mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-\|/:\/", 'disappoi
 mbti_dataset['posts'] = mbti_dataset['posts'].str.replace(r":-S|:S", 'confused', regex=True)
 
 # %% Split the type column into four columns and store the result in a temporary DataFrame
+console.log("Splitting type column into four columns")
 temp_df = mbti_dataset['type'].str.split("", expand=True)
 
 # Assign the columns of the temporary DataFrame to the original DataFrame
@@ -57,6 +65,7 @@ mbti_dataset = mbti_dataset.reindex(columns=new_column_order)
 # mbti_dataset['J-P'] = mbti_dataset['J-P'].str.replace("J", '0')
 # mbti_dataset['J-P'] = mbti_dataset['J-P'].str.replace("P", '1')
 
+console.log("Encoding type letters to 0 and 1")
 mbti_dataset['I-E'] = mbti_dataset['I-E'].apply(lambda x: torch.from_numpy(np.array([1.0, 0.0])) if x == 'I' else torch.from_numpy(np.array([0.0, 1.0])))
 mbti_dataset['N-S'] = mbti_dataset['N-S'].apply(lambda x: torch.from_numpy(np.array([1.0, 0.0])) if x == 'N' else torch.from_numpy(np.array([0.0, 1.0])))
 mbti_dataset['T-F'] = mbti_dataset['T-F'].apply(lambda x: torch.from_numpy(np.array([1.0, 0.0])) if x == 'T' else torch.from_numpy(np.array([0.0, 1.0])))

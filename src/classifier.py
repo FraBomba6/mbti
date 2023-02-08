@@ -1,7 +1,10 @@
 from transformers import XLNetForSequenceClassification, RobertaForSequenceClassification
+from rich.console import Console
+rich = Console()
 
 
 def get_model(model_string: str):
+    rich.log(f"Getting model for {model_string} model")
     if model_string == "xlnet":
         model = XLNetForSequenceClassification.from_pretrained("xlnet-base-cased", num_labels=2)
     elif model_string == "roberta":

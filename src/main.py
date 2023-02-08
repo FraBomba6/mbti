@@ -23,6 +23,7 @@ console = Console()
 #%%
 model_string = 'xlnet'
 tokenized_text = tokenize(model_string, mbti_dataset)
+console.log("Creating dataset and dataloader")
 dataset = torch.utils.data.TensorDataset(tokenized_text['input_ids'], tokenized_text['attention_mask'], i_e, n_s, t_f, j_p)
 train_dataset, test_dataset = torch.utils.data.random_split(dataset, [int(len(dataset)*0.8), int(len(dataset)*0.2)])
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True) #takes the dataset and shuffels them totally random into the batches of the size 16
@@ -31,7 +32,7 @@ test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=BATCH_SIZ
 #%%
 
 # Training part
-
+console.log("Generating models, optimizers and schedulers")
 # Model I-E
 
 model_ie = classifier.get_model("xlnet")
@@ -87,15 +88,18 @@ def train_model_one_epoch(dataloader, epoch, label_index, model, scheduler, opti
 
 # Testing part
 
+
 def f1(preds, labels):
     preds_flat = np.argmax(preds, axis=1).flatten()
     labels_flat = np.argmax(labels, axis=1).flatten()
     return f1_score(labels_flat, preds_flat)
 
+
 def accuracy(preds, labels):
     preds_flat = np.argmax(preds, axis=1).flatten()
     labels_flat = np.argmax(labels, axis=1).flatten()
     return np.sum((preds_flat == labels_flat).numpy())/len(preds_flat)
+
 
 def test_classification(dataloader, label_index, model, scheduler, optimizer):
     console.log(f"Testing")
@@ -131,7 +135,10 @@ def test_classification(dataloader, label_index, model, scheduler, optimizer):
 
 
 # running in epochs
-
+test_classification(test_dataloader, 1, model_ie, scheduler_ie, optimizer_ie)
+test_classification(test_dataloader, 2, model_ns, scheduler_ns, optimizer_ns)
+test_classification(test_dataloader, 3, model_tf, scheduler_tf, optimizer_tf)
+test_classification(test_dataloader, 4, model_jp, scheduler_jp, optimizer_jp)
 for epoch in range(EPOCHS):
     train_model_one_epoch(train_dataloader, epoch, 1, model_ie, scheduler_ie, optimizer_ie)
     test_classification(test_dataloader, 1, model_ie, scheduler_ie, optimizer_ie)
