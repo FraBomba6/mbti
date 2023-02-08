@@ -85,6 +85,7 @@ def train_model_one_epoch(dataloader, epoch, label_index, model, scheduler, opti
     avg_loss = total_loss / len(dataloader)
     console.log("Average loss: {0:.4f}".format(avg_loss))
     model.cpu()
+    return avg_loss
 
 # Testing part
 
@@ -132,6 +133,7 @@ def test_classification(dataloader, label_index, model, scheduler, optimizer):
     avg_accuracy = total_accuracy / len(dataloader)
     console.log("Accuracy: {0:.4f}".format(avg_accuracy))
     model.cpu()
+    return avg_accuracy
 
 
 # running in epochs
@@ -139,12 +141,29 @@ test_classification(test_dataloader, 1, model_ie, scheduler_ie, optimizer_ie)
 test_classification(test_dataloader, 2, model_ns, scheduler_ns, optimizer_ns)
 test_classification(test_dataloader, 3, model_tf, scheduler_tf, optimizer_tf)
 test_classification(test_dataloader, 4, model_jp, scheduler_jp, optimizer_jp)
+
+best_ie_accuracy = 0
+best_ns_accuracy = 0
+best_tf_accuracy = 0
+best_jp_accuracy = 0
 for epoch in range(EPOCHS):
     train_model_one_epoch(train_dataloader, epoch, 1, model_ie, scheduler_ie, optimizer_ie)
-    test_classification(test_dataloader, 1, model_ie, scheduler_ie, optimizer_ie)
+    current_ie_accuracy = test_classification(test_dataloader, 1, model_ie, scheduler_ie, optimizer_ie)
+    if current_ie_accuracy > best_ie_accuracy:
+        best_ie_accuracy = current_ie_accuracy
+        model_ie.save_pretrained("models/" + model_string + "_ie")
     train_model_one_epoch(train_dataloader, epoch, 2, model_ns, scheduler_ns, optimizer_ns)
-    test_classification(test_dataloader, 2, model_ns, scheduler_ns, optimizer_ns)
+    current_ns_accuracy = test_classification(test_dataloader, 2, model_ns, scheduler_ns, optimizer_ns)
+    if current_ns_accuracy > best_ns_accuracy:
+        best_ns_accuracy = current_ns_accuracy
+        model_ns.save_pretrained("models/" + model_string + "_ns")
     train_model_one_epoch(train_dataloader, epoch, 3, model_tf, scheduler_tf, optimizer_tf)
-    test_classification(test_dataloader, 3, model_tf, scheduler_tf, optimizer_tf)
+    current_tf_accuracy = test_classification(test_dataloader, 3, model_tf, scheduler_tf, optimizer_tf)
+    if current_tf_accuracy > best_tf_accuracy:
+        best_tf_accuracy = current_tf_accuracy
+        model_tf.save_pretrained("models/" + model_string + "_tf")
     train_model_one_epoch(train_dataloader, epoch, 4, model_jp, scheduler_jp, optimizer_jp)
-    test_classification(test_dataloader, 4, model_jp, scheduler_jp, optimizer_jp)
+    current_jp_accuracy = test_classification(test_dataloader, 4, model_jp, scheduler_jp, optimizer_jp)
+    if current_jp_accuracy > best_jp_accuracy:
+        best_jp_accuracy = current_jp_accuracy
+        model_jp.save_pretrained("models/" + model_string + "_jp")
