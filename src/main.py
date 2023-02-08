@@ -96,6 +96,7 @@ def test_classification(dataloader, label_index, model, scheduler, optimizer):
     console.log(f"Testing")
     total_loss = 0
     total_accuracy = 0
+    model.to(DEVICE)
     model.eval()
 
     for step, batch in tqdm(enumerate(dataloader), total=len(dataloader)):
@@ -118,12 +119,17 @@ def test_classification(dataloader, label_index, model, scheduler, optimizer):
     console.log("Average loss: {0:.4f}".format(avg_loss))
     avg_accuracy = total_accuracy / len(dataloader)
     console.log("Accuracy: {0:.4f}".format(avg_accuracy))
+    model.cpu()
 
 
 # running in epochs
 
 for epoch in range(EPOCHS):
     train_model_one_epoch(train_dataloader, epoch, 1, model_ie, scheduler_ie, optimizer_ie)
-    train_model_one_epoch(train_dataloader, epoch, 1, model_ns, scheduler_ns, optimizer_ns)
-    train_model_one_epoch(train_dataloader, epoch, 1, model_tf, scheduler_tf, optimizer_tf)
-    train_model_one_epoch(train_dataloader, epoch, 1, model_jp, scheduler_jp, optimizer_jp)
+    test_classification(test_dataloader, 1, model_ie, scheduler_ie, optimizer_ie)
+    train_model_one_epoch(train_dataloader, epoch, 2, model_ns, scheduler_ns, optimizer_ns)
+    test_classification(test_dataloader, 2, model_ns, scheduler_ns, optimizer_ns)
+    train_model_one_epoch(train_dataloader, epoch, 3, model_tf, scheduler_tf, optimizer_tf)
+    test_classification(test_dataloader, 3, model_tf, scheduler_tf, optimizer_tf)
+    train_model_one_epoch(train_dataloader, epoch, 4, model_jp, scheduler_jp, optimizer_jp)
+    test_classification(test_dataloader, 4, model_jp, scheduler_jp, optimizer_jp)
