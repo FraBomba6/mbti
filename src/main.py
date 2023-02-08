@@ -36,7 +36,7 @@ model_ie = classifier.get_model("xlnet")
 optimizer = AdamW(model_ie.parameters(), lr=5e-3, eps=1e-8)
 scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
 
-def train_model_one_epoch(dataloader, epoch, label_index):
+def train_model_one_epoch(dataloader, epoch, label_index, model_ie, scheduler_ie, optimizer_ie):
     console.log(f"Training epoch #{epoch+1}")
     total_loss = 0
     model_ie.to(DEVICE)
@@ -57,111 +57,10 @@ def train_model_one_epoch(dataloader, epoch, label_index):
         total_loss += loss.item()
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model_ie.parameters(), 1.0) #prevent gradient from exploding (normalization)
-        optimizer.step() #updating the values for next iteration
-        scheduler.step() #updating the values for next iteration
+        optimizer_ie.step() #updating the values for next iteration
+        scheduler_ie.step() #updating the values for next iteration
 
     avg_loss = total_loss / len(dataloader)
     console.log("Average loss: {0:.4f}".format(avg_loss))
     model_ie.cpu()
 
-# Model N-S
-
-model_ns = classifier.get_model("xlnet")
-optimizer = AdamW(model_ns.parameters(), lr=5e-3, eps=1e-8)
-scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
-
-def train_model_one_epoch(dataloader, epoch, label_index):
-    console.log(f"Training epoch #{epoch+1}")
-    total_loss = 0
-    model_ns.to(DEVICE)
-    model_ns.train()
-
-    for step, batch in tqdm(enumerate(dataloader), total=len(dataloader)):
-        batch_input_ids = batch[0].to(DEVICE)
-        batch_input_masks = batch[1].to(DEVICE)
-        batch_labels = batch[label_index+1].to(DEVICE)
-
-        model_ns.zero_grad()
-        outputs = model_ns(
-            input_ids=batch_input_ids,
-            attention_mask=batch_input_masks,
-            labels=batch_labels
-        )
-        loss, logits = outputs[:2] #logit = predicted value (that one gets), label is what I want
-        total_loss += loss.item()
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model_ns.parameters(), 1.0) #prevent gradient from exploding (normalization)
-        optimizer.step() #updating the values for next iteration
-        scheduler.step() #updating the values for next iteration
-
-    avg_loss = total_loss / len(dataloader)
-    console.log("Average loss: {0:.4f}".format(avg_loss))
-    model_ns.cpu()
-
-# Model T-F
-
-model_tf = classifier.get_model("xlnet")
-optimizer = AdamW(model_tf.parameters(), lr=5e-3, eps=1e-8)
-scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
-
-def train_model_one_epoch(dataloader, epoch, label_index):
-    console.log(f"Training epoch #{epoch+1}")
-    total_loss = 0
-    model_tf.to(DEVICE)
-    model_tf.train()
-
-    for step, batch in tqdm(enumerate(dataloader), total=len(dataloader)):
-        batch_input_ids = batch[0].to(DEVICE)
-        batch_input_masks = batch[1].to(DEVICE)
-        batch_labels = batch[label_index+1].to(DEVICE)
-
-        model_tf.zero_grad()
-        outputs = model_ns(
-            input_ids=batch_input_ids,
-            attention_mask=batch_input_masks,
-            labels=batch_labels
-        )
-        loss, logits = outputs[:2] #logit = predicted value (that one gets), label is what I want
-        total_loss += loss.item()
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model_tf.parameters(), 1.0) #prevent gradient from exploding (normalization)
-        optimizer.step() #updating the values for next iteration
-        scheduler.step() #updating the values for next iteration
-
-    avg_loss = total_loss / len(dataloader)
-    console.log("Average loss: {0:.4f}".format(avg_loss))
-    model_tf.cpu()
-
-# Model J-P
-
-model_jp = classifier.get_model("xlnet")
-optimizer = AdamW(model_jp.parameters(), lr=5e-3, eps=1e-8)
-scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
-
-def train_model_one_epoch(dataloader, epoch, label_index):
-    console.log(f"Training epoch #{epoch+1}")
-    total_loss = 0
-    model_jp.to(DEVICE)
-    model_jp.train()
-
-    for step, batch in tqdm(enumerate(dataloader), total=len(dataloader)):
-        batch_input_ids = batch[0].to(DEVICE)
-        batch_input_masks = batch[1].to(DEVICE)
-        batch_labels = batch[label_index+1].to(DEVICE)
-
-        model_jp.zero_grad()
-        outputs = model_jp(
-            input_ids=batch_input_ids,
-            attention_mask=batch_input_masks,
-            labels=batch_labels
-        )
-        loss, logits = outputs[:2] #logit = predicted value (that one gets), label is what I want
-        total_loss += loss.item()
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model_jp.parameters(), 1.0) #prevent gradient from exploding (normalization)
-        optimizer.step() #updating the values for next iteration
-        scheduler.step() #updating the values for next iteration
-
-    avg_loss = total_loss / len(dataloader)
-    console.log("Average loss: {0:.4f}".format(avg_loss))
-    model_jp.cpu()
