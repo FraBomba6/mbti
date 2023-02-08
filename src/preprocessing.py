@@ -57,10 +57,10 @@ mbti_dataset = mbti_dataset.reindex(columns=new_column_order)
 # mbti_dataset['J-P'] = mbti_dataset['J-P'].str.replace("J", '0')
 # mbti_dataset['J-P'] = mbti_dataset['J-P'].str.replace("P", '1')
 
-mbti_dataset['I-E'] = mbti_dataset['I-E'].apply(lambda x: torch.from_numpy(np.array([1, 0])) if x == 'I' else torch.from_numpy(np.array([0, 1])))
-mbti_dataset['N-S'] = mbti_dataset['N-S'].apply(lambda x: torch.from_numpy(np.array([1, 0])) if x == 'N' else torch.from_numpy(np.array([0, 1])))
-mbti_dataset['T-F'] = mbti_dataset['T-F'].apply(lambda x: torch.from_numpy(np.array([1, 0])) if x == 'T' else torch.from_numpy(np.array([0, 1])))
-mbti_dataset['J-P'] = mbti_dataset['J-P'].apply(lambda x: torch.from_numpy(np.array([1, 0])) if x == 'J' else torch.from_numpy(np.array([0, 1])))
+mbti_dataset['I-E'] = mbti_dataset['I-E'].apply(lambda x: torch.from_numpy(np.array([1.0, 0.0])) if x == 'I' else torch.from_numpy(np.array([0.0, 1.0])))
+mbti_dataset['N-S'] = mbti_dataset['N-S'].apply(lambda x: torch.from_numpy(np.array([1.0, 0.0])) if x == 'N' else torch.from_numpy(np.array([0.0, 1.0])))
+mbti_dataset['T-F'] = mbti_dataset['T-F'].apply(lambda x: torch.from_numpy(np.array([1.0, 0.0])) if x == 'T' else torch.from_numpy(np.array([0.0, 1.0])))
+mbti_dataset['J-P'] = mbti_dataset['J-P'].apply(lambda x: torch.from_numpy(np.array([1.0, 0.0])) if x == 'J' else torch.from_numpy(np.array([0.0, 1.0])))
 
 # %%
 i_e = mbti_dataset['I-E'].tolist()
@@ -68,18 +68,14 @@ i_e = mbti_dataset['I-E'].tolist()
 # i_e = torch.Tensor(i_e)
 i_e = torch.stack(i_e)
 n_s = mbti_dataset['N-S'].tolist()
-#n_s = [int(x) for x in n_s]
-#n_s = torch.Tensor(n_s)
+# n_s = [int(x) for x in n_s]
+# n_s = torch.Tensor(n_s)
 n_s = torch.stack(n_s)
 t_f = mbti_dataset['T-F'].tolist()
-#t_f = [int(x) for x in t_f]
-#t_f = torch.Tensor(t_f)
+# t_f = [int(x) for x in t_f]
+# t_f = torch.Tensor(t_f)
 t_f = torch.stack(t_f)
 j_p = mbti_dataset['J-P'].tolist()
-#j_p = [int(x) for x in j_p]
-#j_p = torch.Tensor(j_p)
+# j_p = [int(x) for x in j_p]
+# j_p = torch.Tensor(j_p)
 j_p = torch.stack(j_p)
-
-# type_data = torch.stack((i_e, n_s, t_f, j_p), dim=1) #not needed
-# type_data = (i_e, n_s, t_f, j_p)
-# print(type_data)

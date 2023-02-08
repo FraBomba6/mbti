@@ -4,7 +4,7 @@ from tqdm import tqdm
 import pandas as pd
 
 
-text_file = "../data/dataset.csv" # ../ for going up one folder
+text_file = "../data/dataset.csv"  # ../ for going up one folder
 text = open(text_file, "r", encoding="utf-8").read()
 text = text.lower()
 dataset = pd.read_csv("../data/dataset.csv")
@@ -50,11 +50,11 @@ stopwords.add('type')
 
 my_wordcloud = WordCloud(width=800, height=800, stopwords=stopwords, background_color='white')
 
-for type in tqdm(posts_by_type.keys()):
-    my_wordcloud_type = my_wordcloud.generate(posts_by_type[type])
+for type_ in tqdm(posts_by_type.keys()):
+    my_wordcloud_type = my_wordcloud.generate(posts_by_type[type_])
     plt.subplots(figsize = (15,15))
     plt.imshow(my_wordcloud_type)
     plt.axis("off")
-    plt.title(type, fontsize = 30)
-    plt.savefig('../img/'+type+'.png')
+    plt.title(type_, fontsize = 30)
+    plt.savefig('../img/' + type_ + '.png')
     plt.show()

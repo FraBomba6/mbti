@@ -72,12 +72,12 @@ def train_model_one_epoch(dataloader, epoch, label_index, model, scheduler, opti
             attention_mask=batch_input_masks,
             labels=batch_labels
         )
-        loss, logits = outputs[:2] #logit = predicted value (that one gets), label is what I want
+        loss, logits = outputs[:2]  # logit = predicted value (that one gets), label is what I want
         total_loss += loss.item()
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0) #prevent gradient from exploding (normalization)
-        optimizer.step() #updating the values for next iteration
-        scheduler.step() #updating the values for next iteration
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)  # prevent gradient from exploding (normalization)
+        optimizer.step()  # updating the values for next iteration
+        scheduler.step()  # updating the values for next iteration
 
     avg_loss = total_loss / len(dataloader)
     console.log("Average loss: {0:.4f}".format(avg_loss))
