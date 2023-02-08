@@ -4,6 +4,8 @@ from preprocessing import mbti_dataset, i_e, n_s, t_f, j_p
 from custom_tokenize import tokenize
 from rich.console import Console
 from tqdm import tqdm
+from sklearn.metrics import f1_score
+import numpy as np
 
 # IF YOU RUN CHUNKS
 # import src.classifier as classifier
@@ -83,10 +85,45 @@ def train_model_one_epoch(dataloader, epoch, label_index, model, scheduler, opti
     console.log("Average loss: {0:.4f}".format(avg_loss))
     model.cpu()
 
+# Testing part
+
+def f1(preds, labels):
+    preds_flat = np.argmax(preds, axis=1).flatten()
+    labels_flat = np.argmax(labels, axis=1).flatten()
+    return f1_score(labels_flat, preds_flat)
+
+def test_classification(dataloader, label_index, model, scheduler, optimizer):
+    console.log(f"Testing")
+    total_loss = 0
+    total_accuracy = 0
+    model.eval()
+
+    for step, batch in tqdm(enumerate(dataloader), total=len(dataloader)):
+        batch_input_ids = batch[0].to(DEVICE)
+        batch_input_masks = batch[1].to(DEVICE)
+        batch_labels = batch[label_index+1].to(DEVICE)
+
+        with torch.no_grad():
+            outputs = model(
+                input_ids=batch_input_ids,
+                attention_mask=batch_input_masks,
+                labels=batch_labels
+            )
+            loss, logits = outputs[:2]
+            total_loss += loss.item()
+
+        total_accuracy += f1(logits, batch_labels)
+
+    avg_loss = total_loss / len(dataloader)
+    console.log("Average loss: {0:.4f}".format(avg_loss))
+    avg_accuracy = total_accuracy / len(dataloader)
+    console.log("Accuracy: {0:.4f}".format(avg_accuracy))
+
+
+# running in epochs
 
 for epoch in range(EPOCHS):
     train_model_one_epoch(train_dataloader, epoch, 1, model_ie, scheduler_ie, optimizer_ie)
     train_model_one_epoch(train_dataloader, epoch, 1, model_ns, scheduler_ns, optimizer_ns)
     train_model_one_epoch(train_dataloader, epoch, 1, model_tf, scheduler_tf, optimizer_tf)
     train_model_one_epoch(train_dataloader, epoch, 1, model_jp, scheduler_jp, optimizer_jp)
-
