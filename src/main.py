@@ -92,6 +92,11 @@ def f1(preds, labels):
     labels_flat = np.argmax(labels, axis=1).flatten()
     return f1_score(labels_flat, preds_flat)
 
+def accuracy(preds, labels):
+    preds_flat = np.argmax(preds, axis=1).flatten()
+    labels_flat = np.argmax(labels, axis=1).flatten()
+    return np.sum((preds_flat == labels_flat).numpy())/len(preds_flat)
+
 def test_classification(dataloader, label_index, model, scheduler, optimizer):
     console.log(f"Testing")
     total_loss = 0
@@ -116,7 +121,7 @@ def test_classification(dataloader, label_index, model, scheduler, optimizer):
         logits = logits.cpu()
         batch_labels = batch_labels.cpu()
 
-        total_accuracy += f1(logits, batch_labels)
+        total_accuracy += accuracy(logits, batch_labels)
 
     avg_loss = total_loss / len(dataloader)
     console.log("Average loss: {0:.4f}".format(avg_loss))
