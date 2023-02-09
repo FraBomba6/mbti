@@ -1,4 +1,3 @@
-# IF YOU RUN FROM TERMINAL
 import classifier as classifier
 from preprocessing import mbti_dataset, i_e, n_s, t_f, j_p
 from custom_tokenize import tokenize
@@ -6,19 +5,15 @@ from rich.console import Console
 from tqdm import tqdm
 from sklearn.metrics import f1_score
 import numpy as np
-
-# IF YOU RUN CHUNKS
-# import src.classifier as classifier
-# from src.preprocessing import mbti_dataset
-# from src.custom_tokenize import tokenize
-
 import torch
 from torch.optim import AdamW
 from torch.utils.data import TensorDataset
 from transformers import get_linear_schedule_with_warmup
+
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 EPOCHS = 3  # number of iterations we are performing the training steps over the dataset
 BATCH_SIZE = 16  # number of samples we are using to update the model's parameters
+
 console = Console()
 #%%
 model_string = 'roberta'
@@ -26,7 +21,7 @@ tokenized_text = tokenize(model_string, mbti_dataset)
 console.log("Creating dataset and dataloader")
 dataset = torch.utils.data.TensorDataset(tokenized_text['input_ids'], tokenized_text['attention_mask'], i_e, n_s, t_f, j_p)
 train_dataset, test_dataset = torch.utils.data.random_split(dataset, [int(len(dataset)*0.8), int(len(dataset)*0.2)])
-train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True) #takes the dataset and shuffels them totally random into the batches of the size 16
+train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)  # takes the dataset and shuffels them totally random into the batches of the size 16
 test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=True)
 
 #%%
@@ -102,7 +97,7 @@ def accuracy(preds, labels):
     return np.sum((preds_flat == labels_flat).numpy())/len(preds_flat)
 
 
-def test_classification(dataloader, label_index, model, scheduler, optimizer):
+def test_classification(dataloader, label_index, model):
     console.log(f"Testing")
     total_loss = 0
     total_accuracy = 0
@@ -137,33 +132,37 @@ def test_classification(dataloader, label_index, model, scheduler, optimizer):
 
 
 # running in epochs
-test_classification(test_dataloader, 1, model_ie, scheduler_ie, optimizer_ie)
-test_classification(test_dataloader, 2, model_ns, scheduler_ns, optimizer_ns)
-test_classification(test_dataloader, 3, model_tf, scheduler_tf, optimizer_tf)
-test_classification(test_dataloader, 4, model_jp, scheduler_jp, optimizer_jp)
+test_classification(test_dataloader, 1, model_ie)
+test_classification(test_dataloader, 2, model_ns)
+test_classification(test_dataloader, 3, model_tf)
+test_classification(test_dataloader, 4, model_jp)
 
 best_ie_accuracy = 0
 best_ns_accuracy = 0
 best_tf_accuracy = 0
 best_jp_accuracy = 0
 for epoch in range(EPOCHS):
+    console.log("\nIE model")
     train_model_one_epoch(train_dataloader, epoch, 1, model_ie, scheduler_ie, optimizer_ie)
-    current_ie_accuracy = test_classification(test_dataloader, 1, model_ie, scheduler_ie, optimizer_ie)
+    current_ie_accuracy = test_classification(test_dataloader, 1, model_ie)
     if current_ie_accuracy > best_ie_accuracy:
         best_ie_accuracy = current_ie_accuracy
-        model_ie.save_pretrained("models/" + model_string + "_ie")
+        model_ie.save_pretrained("../models/" + model_string + "_ie")
+    console.log("\nNS model")
     train_model_one_epoch(train_dataloader, epoch, 2, model_ns, scheduler_ns, optimizer_ns)
-    current_ns_accuracy = test_classification(test_dataloader, 2, model_ns, scheduler_ns, optimizer_ns)
+    current_ns_accuracy = test_classification(test_dataloader, 2, model_ns)
     if current_ns_accuracy > best_ns_accuracy:
         best_ns_accuracy = current_ns_accuracy
-        model_ns.save_pretrained("models/" + model_string + "_ns")
+        model_ns.save_pretrained("../models/" + model_string + "_ns")
+    console.log("\nTF model")
     train_model_one_epoch(train_dataloader, epoch, 3, model_tf, scheduler_tf, optimizer_tf)
-    current_tf_accuracy = test_classification(test_dataloader, 3, model_tf, scheduler_tf, optimizer_tf)
+    current_tf_accuracy = test_classification(test_dataloader, 3, model_tf)
     if current_tf_accuracy > best_tf_accuracy:
         best_tf_accuracy = current_tf_accuracy
-        model_tf.save_pretrained("models/" + model_string + "_tf")
+        model_tf.save_pretrained("../models/" + model_string + "_tf")
+    console.log("\nJP model")
     train_model_one_epoch(train_dataloader, epoch, 4, model_jp, scheduler_jp, optimizer_jp)
-    current_jp_accuracy = test_classification(test_dataloader, 4, model_jp, scheduler_jp, optimizer_jp)
+    current_jp_accuracy = test_classification(test_dataloader, 4, model_jp)
     if current_jp_accuracy > best_jp_accuracy:
         best_jp_accuracy = current_jp_accuracy
-        model_jp.save_pretrained("models/" + model_string + "_jp")
+        model_jp.save_pretrained("../models/" + model_string + "_jp")
