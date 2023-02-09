@@ -21,7 +21,7 @@ EPOCHS = 3  # number of iterations we are performing the training steps over the
 BATCH_SIZE = 16  # number of samples we are using to update the model's parameters
 console = Console()
 #%%
-model_string = 'xlnet'
+model_string = 'roberta'
 tokenized_text = tokenize(model_string, mbti_dataset)
 console.log("Creating dataset and dataloader")
 dataset = torch.utils.data.TensorDataset(tokenized_text['input_ids'], tokenized_text['attention_mask'], i_e, n_s, t_f, j_p)
@@ -35,25 +35,25 @@ test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=BATCH_SIZ
 console.log("Generating models, optimizers and schedulers")
 # Model I-E
 
-model_ie = classifier.get_model("xlnet")
+model_ie = classifier.get_model(model_string)
 optimizer_ie = AdamW(model_ie.parameters(), lr=5e-3, eps=1e-8)
 scheduler_ie = get_linear_schedule_with_warmup(optimizer_ie, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
 
 # Model N-S
 
-model_ns = classifier.get_model("xlnet")
+model_ns = classifier.get_model(model_string)
 optimizer_ns = AdamW(model_ns.parameters(), lr=5e-3, eps=1e-8)
 scheduler_ns = get_linear_schedule_with_warmup(optimizer_ns, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
 
 # Model T-F
 
-model_tf = classifier.get_model("xlnet")
+model_tf = classifier.get_model(model_string)
 optimizer_tf = AdamW(model_tf.parameters(), lr=5e-3, eps=1e-8)
 scheduler_tf = get_linear_schedule_with_warmup(optimizer_tf, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
 
 # Model J-P
 
-model_jp = classifier.get_model("xlnet")
+model_jp = classifier.get_model(model_string)
 optimizer_jp = AdamW(model_jp.parameters(), lr=5e-3, eps=1e-8)
 scheduler_jp = get_linear_schedule_with_warmup(optimizer_jp, num_warmup_steps=0, num_training_steps=EPOCHS*len(train_dataloader))
 
