@@ -17,7 +17,7 @@ LR = 5e-3  # learning rate
 
 console = Console()
 #%%
-model_string = 'roberta'
+model_string = 'xlnet'
 tokenized_text = tokenize(model_string, mbti_dataset)
 console.log("Creating dataset and dataloader")
 dataset = torch.utils.data.TensorDataset(tokenized_text['input_ids'], tokenized_text['attention_mask'], i_e, n_s, t_f, j_p)
